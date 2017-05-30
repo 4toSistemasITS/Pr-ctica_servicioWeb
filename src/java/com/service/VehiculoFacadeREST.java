@@ -5,8 +5,9 @@
  */
 package com.service;
 
-import com.model.Funciones;
-import com.model.Profesor;
+import com.model.Usuario;
+import com.model.Vehiculo;
+import java.util.Date;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -29,27 +30,27 @@ import javax.ws.rs.core.MediaType;
  * @author Valeria
  */
 @Stateless
-@Path("com.model.profesor")
-public class ProfesorFacadeREST extends AbstractFacade<Profesor> {
+@Path("com.model.vehiculo")
+public class VehiculoFacadeREST extends AbstractFacade<Vehiculo> {
 
     @PersistenceContext(unitName = "BDD_docentesPU")
     private EntityManager em;
 
-    public ProfesorFacadeREST() {
-        super(Profesor.class);
+    public VehiculoFacadeREST() {
+        super(Vehiculo.class);
     }
 
     @POST
     @Override
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public void create(Profesor entity) {
+    public void create(Vehiculo entity) {
         super.create(entity);
     }
 
     @PUT
     @Path("{id}")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public void edit(@PathParam("id") Integer id, Profesor entity) {
+    public void edit(@PathParam("id") Integer id, Vehiculo entity) {
         super.edit(entity);
     }
 
@@ -62,34 +63,24 @@ public class ProfesorFacadeREST extends AbstractFacade<Profesor> {
     @GET
     @Path("{id}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public Profesor find(@PathParam("id") Integer id) {
+    public Vehiculo find(@PathParam("id") Integer id) {
         return super.find(id);
     }
 
     @GET
     @Override
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_JSON})
-    public List<Profesor> findAll() {
+    public List<Vehiculo> findAll() {
         return super.findAll();
     }
-    @POST
-    @Path("consulta")
-    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_JSON})
-    public List<Profesor> consulta(@FormParam("usuario")String valor,@FormParam("contraseña")int password) {
-         List<Profesor> retorno=null;
-         if (valor.equals("Lady")&& password==123){
-             retorno=super.findAll();
-         }
-        return retorno;
-    }
-    
+
     @GET
     @Path("{from}/{to}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public List<Profesor> findRange(@PathParam("from") Integer from, @PathParam("to") Integer to) {
+    public List<Vehiculo> findRange(@PathParam("from") Integer from, @PathParam("to") Integer to) {
         return super.findRange(new int[]{from, to});
     }
-    
+
     @GET
     @Path("count")
     @Produces(MediaType.TEXT_PLAIN)
@@ -97,44 +88,41 @@ public class ProfesorFacadeREST extends AbstractFacade<Profesor> {
         return String.valueOf(super.count());
     }
     @POST
-    @Path("contar")
+    @Path("crear")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_JSON})
-    public String contar(@FormParam("usuario")int valor) {
-        String retorno="";
-        if(valor ==1){
-            return String.valueOf(super.count());
+    public String crear(@FormParam("tipo") String tipo,@FormParam("marca") String marca,@FormParam("placa") String placa,
+            @FormParam("eliminado") boolean eliminado,@FormParam("fecha") Date fecha,@FormParam("modelo") String modelo,@FormParam("color") String color) {
+        String mensaje="{\"exitoso\":false}";
+        try{
+            if (reporte(placa,marca,modelo,color)== null){
+                create(new Vehiculo(placa,marca,modelo,color));
+                mensaje="{\"exitoso\":true}"; 
+            }      
+        }catch(Exception e){           
         }
-        return retorno;
+            
+        return mensaje;
     }
-    @POST
-    @Path("consultarid")
-    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_JSON})
-    public List<Profesor> consultaid(@FormParam("usuario")String usuario,@FormParam("contraseña")int password,@FormParam("pkProfesor")  int valor ) {
-         List<Profesor> retorno=null;
-         if (usuario.equals("Lady")&& password==123){
-             retorno=obtenerid(valor);
-         }
-        return retorno;
-    }
-//     public List<Profesor> consultarid(@FormParam("pkProfesor")  int valor) {
-//         List<Profesor>retorno=obtenerid(valor);
-//         return retorno;
-//     }
-    
 
     @Override
     protected EntityManager getEntityManager() {
         return em;
     }
-    List<Profesor> obtenerid(int valor) {
-        TypedQuery<Profesor> qry;
-        qry = getEntityManager().createQuery("SELECT p FROM Profesor p WHERE p.pkProfesor = :pkProfesor", Profesor.class);
-        qry.setParameter("pkProfesor", valor);
+        public Vehiculo reporte(String placa,String marca, String modelo, String color) {
+        Vehiculo v =null;
+        TypedQuery<Vehiculo> qry;
+            qry = getEntityManager().createQuery("SELECT v FROM Vehiculo v WHERE v.placa = :placa and v.marca = :marca and  v.modelo = :modelo and v.color = :color", Vehiculo.class);
+            qry.setParameter("placa", placa);
+            qry.setParameter("marca", marca);
+            qry.setParameter("modelo", modelo);
+            qry.setParameter("color", color);
+            
         try {
-            return qry.getResultList();
+            return qry.getSingleResult();
         } catch (NoResultException e) {
             return null;
         }
-    }
 
+    }
+    
 }

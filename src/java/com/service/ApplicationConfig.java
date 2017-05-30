@@ -32,6 +32,8 @@ public class ApplicationConfig extends Application {
         resources.add(com.service.FuncionesFacadeREST.class);
         resources.add(com.service.NewCrossOriginResourceSharingFilter.class);
         resources.add(com.service.ProfesorFacadeREST.class);
+        resources.add(com.service.UsuarioFacadeREST.class);
+        resources.add(com.service.VehiculoFacadeREST.class);
     }
     
 }
