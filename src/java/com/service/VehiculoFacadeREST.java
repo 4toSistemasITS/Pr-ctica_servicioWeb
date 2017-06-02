@@ -95,7 +95,7 @@ public class VehiculoFacadeREST extends AbstractFacade<Vehiculo> {
         String mensaje="{\"exitoso\":false}";
         try{
             if (reporte(placa,marca,modelo,color)== null){
-                create(new Vehiculo(placa,marca,modelo,color));
+                create(new Vehiculo(tipo,marca,placa,eliminado,fecha,modelo,color));
                 mensaje="{\"exitoso\":true}"; 
             }      
         }catch(Exception e){           
@@ -124,5 +124,6 @@ public class VehiculoFacadeREST extends AbstractFacade<Vehiculo> {
         }
 
     }
+    
     
 }

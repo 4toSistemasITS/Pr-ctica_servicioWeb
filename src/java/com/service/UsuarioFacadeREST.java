@@ -113,6 +113,71 @@ public class UsuarioFacadeREST extends AbstractFacade<Usuario> {
     protected EntityManager getEntityManager() {
         return em;
     }
+    @POST
+    @Path("editar")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_JSON})
+    public String editar(@FormParam("usuario") String usuario, @FormParam("contraseña") String password,@FormParam("id") int id) {
+        String mensaje="{\"exitoso\":false,\"motivo\":";
+        Usuario u= buscarid(id);
+        if(u!=null){
+            u.setUsuario(usuario);
+            u.setPassword(password);
+            try {
+                edit(id, u);
+                mensaje = "{\"exitoso\":true";
+            } catch (Exception e) {
+                mensaje += "\"Execpcion en base\"";
+            }
+        }else{
+            mensaje+="\"Datos no correctos\"";
+        }
+        mensaje+="}";   
+        return mensaje;
+    }
+    //EDITAR ELIMINADOS
+    @POST
+    @Path("editareliminado")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_JSON})
+    public String editareliminado(@FormParam("id") int id){
+        String mensaje="{\"exitoso\":false,\"motivo\":";
+        Usuario u= buscarid(id);
+        if(u!=null){
+            u.setEliminado(true);
+            try {
+                edit( u);
+                mensaje = "{\"exitoso\":true";
+            } catch (Exception e) {
+                mensaje += "\"Execpcion en base\"";
+            }
+        }else{
+            mensaje+="\"Datos no correctos\"";
+        }
+        mensaje+="}";   
+        return mensaje;
+    }
+    //----------------------------------------------------------------
+        @POST
+    @Path("editareliminados")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_JSON})
+    public String editareliminados(@FormParam("id") int id){
+        String mensaje="{\"exitoso\":false,\"motivo\":";
+        Usuario u= buscarid_2(id);
+        if(u!=null){
+            u.setEliminado(false);
+            try {
+                edit(id, u);
+                mensaje = "{\"exitoso\":true";
+            } catch (Exception e) {
+                mensaje += "\"Execpcion en base\"";
+            }
+        }else{
+            mensaje+="\"Datos no correctos\"";
+        }
+        mensaje+="}";   
+        return mensaje;
+    }
+    
+
 
     public Usuario login1(String usuario, String password) {
         Usuario u = null;
@@ -133,6 +198,32 @@ public class UsuarioFacadeREST extends AbstractFacade<Usuario> {
         TypedQuery<Usuario> qry;
         qry = getEntityManager().createQuery("SELECT u FROM Usuario u WHERE u.usuario = :usuario", Usuario.class);
         qry.setParameter("usuario",usuario);
+         try {
+            return qry.getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        }
+    }
+    public Usuario buscarid(int pk_usuario){
+        Usuario u=null;
+        TypedQuery<Usuario> qry;
+        qry = getEntityManager().createQuery("SELECT u FROM Usuario u WHERE u.pkUsuario = :pkUsuario and u.eliminado = :eliminado", Usuario.class);
+        qry.setParameter("pkUsuario",pk_usuario);
+        qry.setParameter("eliminado",false);
+        
+         try {
+            return qry.getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        }
+    }
+        public Usuario buscarid_2(int pk_usuario){
+        Usuario u=null;
+        TypedQuery<Usuario> qry;
+        qry = getEntityManager().createQuery("SELECT u FROM Usuario u WHERE u.pkUsuario = :pkUsuario and u.eliminado = :eliminado", Usuario.class);
+        qry.setParameter("pkUsuario",pk_usuario);
+        qry.setParameter("eliminado",true);
+        
          try {
             return qry.getSingleResult();
         } catch (NoResultException e) {

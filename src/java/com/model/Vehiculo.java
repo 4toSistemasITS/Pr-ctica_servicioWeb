@@ -70,12 +70,18 @@ public class Vehiculo implements Serializable {
     public Vehiculo() {
     }
 
-    public Vehiculo(String marca, String placa, String modelo, String color) {
+    public Vehiculo(String tipo, String marca, String placa, Boolean eliminado, Date fechaCreacion, String modelo, String color) {
+        this.tipo = tipo;
         this.marca = marca;
         this.placa = placa;
+        this.eliminado = eliminado;
+        this.fechaCreacion = fechaCreacion;
         this.modelo = modelo;
         this.color = color;
     }
+    
+
+
     
 
     public Vehiculo(Integer pkVehiculo) {
